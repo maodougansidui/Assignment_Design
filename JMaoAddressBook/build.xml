@@ -1,0 +1,97 @@
+<project default="test">
+	<property name="assn_name" value="address_book" />
+	<property name="tester_class_name" value="AddressBookTester" />
+
+	<!-- Stuff that generally won't change from assignment to assignment -->
+	<property name="tester_base_url" value="http://wfs.sbcc.edu/faculty/spstrenn/web/cs137/${assn_name}" />
+
+	<property name="tester_url" value="${tester_base_url}/${tester_class_name}.class" />
+	<property name="tester_dir" value="./sbccunittest" />
+	<property name="tester_path" value="${tester_dir}/${tester_class_name}.class" />
+
+	<property name="lib_base_url" value="http://wfs.sbcc.edu/faculty/spstrenn/web/misc/ant_junit_lib" />
+	<property name="junit_lib_url" value="${lib_base_url}/junit.jar" />
+	<property name="junit_lib_path" value="${tester_dir}/junit.jar" />
+
+	<property name="ant_junit_lib_url" value="${lib_base_url}/ant-junit4.jar" />
+	<property name="ant_junit_lib_path" value="${tester_dir}/ant-junit4.jar" />
+
+	<property name="base_tester_lib_url" value="${lib_base_url}/BaseConsoleAppTester.jar" />
+	<property name="base_tester_lib_path" value="${tester_dir}/BaseConsoleAppTester.jar" />
+
+	<property name="test_data_dir" value="./sbcctestdata" />
+
+
+	<target name="deploy_xdrive">
+		<copy file="build.xml" todir="X:\\web\\cs137\\${assn_name}" overwrite="true" />
+		<copy file="bin/${tester_class_name}.class" todir="X:\\web\\cs137\\${assn_name}" overwrite="true" />
+	</target>
+
+
+	<target name="deploy_mac">
+		<copy file="build.xml" todir="/Volumes/wfs.sbcc.edu/faculty/spstrenn/web/cs137/${assn_name}" overwrite="true" />
+		<copy file="bin/${tester_class_name}.class" todir="/Volumes/wfs.sbcc.edu/faculty/spstrenn/web/cs137/${assn_name}" overwrite="true" />
+	</target>
+
+
+	<target name="dependency_check">
+		<condition property="dependencies.available">
+			<and>
+				<available file="${junit_lib_path}" />
+				<available file="${ant_junit_lib_path}" />
+				<available file="${tester_path}" />
+			</and>
+		</condition>
+	</target>
+
+
+	<target name="get_dependencies" depends="dependency_check" unless="dependencies.available">
+		<mkdir dir="${tester_dir}" />
+		<get src="${ant_junit_lib_url}" dest="${ant_junit_lib_path}" />
+		<get src="${junit_lib_url}" dest="${junit_lib_path}" />
+		<get src="${base_tester_lib_url}" dest="${base_tester_lib_path}" />
+		<get src="${tester_url}" dest="${tester_path}" usetimestamp="on" />
+
+		<condition property="dependencies.available">
+			<and>
+				<available file="${tester_path}" />
+				<available file="${junit_lib_path}" />
+				<available file="${base_tester_lib_path}" />
+				<available file="${ant_junit_lib_path}" />
+			</and>
+		</condition>
+	</target>
+
+
+	<target name="clear_test_data">
+		<delete dir="${test_data_dir}" />
+		<mkdir dir="${test_data_dir}" />
+	</target>
+
+
+	<!-- Re-downloads the testing files from the server and starts a new test -->
+	<target name="update">
+		<delete dir="${tester_dir}" />
+		<antcall target="test">
+		</antcall>
+	</target>
+
+	<target name="test" depends="get_dependencies, clear_test_data" if="dependencies.available">
+
+	   	
+		<junit haltonfailure="no" fork="true">
+			<classpath>
+				<fileset dir="${tester_dir}/">
+					<include name="**/*.jar" />
+				</fileset>
+				<pathelement location="${tester_dir}" />
+			</classpath>
+
+			<batchtest todir="." unless="hasFailingTests">
+				<fileset dir="${tester_dir}" includes="*.class" />
+				<formatter type="plain" usefile="false" />
+			</batchtest>
+		</junit>
+
+	</target>
+</project>
