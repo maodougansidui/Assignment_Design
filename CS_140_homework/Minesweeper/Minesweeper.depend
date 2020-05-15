@@ -1,0 +1,21 @@
+# depslib dependency file v1.0
+1573083649 source:/home/SBCC/jmao/Downloads/CS1401th/10th/Minesweeper/Board.cpp
+	"Board.h"
+	<string>
+	<iostream>
+	<time.h>
+
+1573082193 /home/SBCC/jmao/Downloads/CS1401th/10th/Minesweeper/Board.h
+	<string>
+	<vector>
+
+1573083782 source:/home/SBCC/jmao/Downloads/CS1401th/10th/Minesweeper/main.cpp
+	<iostream>
+	<string>
+	<vector>
+	<algorithm>
+	<cstdlib>
+	<ctime>
+	<map>
+	"Board.h"
+
